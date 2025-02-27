@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "disassembler.h"
+
 typedef unsigned long long u64;
 typedef unsigned char u8;
 
@@ -34,121 +36,6 @@ static u8 *read_file(const char *fileName)
     return (u8 *)buffer;
 }
 
-void disassemble_instructions(u8 *instructions)
-{
-    while (*instructions != '\0')
-    {
-        // shift 2 bits to the right to get first 6 bits
-        // then mask it using AND, this will leave us with the opcode
-        u8 opcode = (*instructions >> 2) & 0b00111111;
-        switch (opcode)
-        {
-        case 0b00100010:
-        {
-            printf("mov ");
-            u8 d = (*instructions & 0b00000010) >> 1;
-            u8 w = (*instructions & 0b00000001);
-            instructions += 1;
-            u8 mod = (*instructions >> 6) & 0b00000011;
-            u8 reg = (*instructions >> 3) & 0b00000111;
-            u8 rm = *instructions & 0b00000111;
-            if (mod == 0b11)
-            {
-                switch (rm)
-                {
-                case 0b000:
-                {
-                    w == 0 ? printf("AL") : printf("AX");
-                    break;
-                }
-                case 0b001:
-                {
-                    w == 0 ? printf("CL") : printf("CX");
-                    break;
-                }
-                case 0b010:
-                {
-                    w == 0 ? printf("DL") : printf("DX");
-                    break;
-                }
-                case 0b011:
-                {
-                    w == 0 ? printf("BL") : printf("BX");
-                    break;
-                }
-                case 0b100:
-                {
-                    w == 0 ? printf("AH") : printf("SP");
-                    break;
-                }
-                case 0b101:
-                {
-                    w == 0 ? printf("CH") : printf("BP");
-                    break;
-                }
-                case 0b110:
-                {
-                    w == 0 ? printf("DH") : printf("SI");
-                    break;
-                }
-                case 0b111:
-                {
-                    w == 0 ? printf("BH") : printf("DI");
-                    break;
-                }
-                }
-            }
-            printf(", ");
-            switch (reg)
-            {
-            case 0b000:
-            {
-                w == 0 ? printf("AL") : printf("AX");
-                break;
-            }
-            case 0b001:
-            {
-                w == 0 ? printf("CL") : printf("CX");
-                break;
-            }
-            case 0b010:
-            {
-                w == 0 ? printf("DL") : printf("DX");
-                break;
-            }
-            case 0b011:
-            {
-                w == 0 ? printf("BL") : printf("BX");
-                break;
-            }
-            case 0b100:
-            {
-                w == 0 ? printf("AH") : printf("SP");
-                break;
-            }
-            case 0b101:
-            {
-                w == 0 ? printf("CH") : printf("BP");
-                break;
-            }
-            case 0b110:
-            {
-                w == 0 ? printf("DH") : printf("SI");
-                break;
-            }
-            case 0b111:
-            {
-                w == 0 ? printf("BH") : printf("DI");
-                break;
-            }
-            }
-            printf("\n");
-            break;
-        }
-        }
-        instructions += 1;
-    }
-}
 
 int main(int argc, char **argv)
 {
