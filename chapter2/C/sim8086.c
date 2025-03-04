@@ -2,11 +2,14 @@
 #include <stdio.h>
 
 #include "disassembler.h"
+#include "sim86.h"
 
-typedef unsigned long long u64;
-typedef unsigned char u8;
+typedef struct {
+    u8* data;
+    u64 length;
+} FileData;
 
-static u8 *read_file(const char *fileName)
+static FileData read_file(const char *fileName)
 {
     FILE *file = fopen(fileName, "rb");
     if (file == NULL)
@@ -31,9 +34,11 @@ static u8 *read_file(const char *fileName)
         fprintf(stderr, "Could not read file: %s\n", fileName);
         exit(EXIT_FAILURE);
     }
-    buffer[bytes_read] = '\0';
     fclose(file);
-    return (u8 *)buffer;
+    return (FileData){
+        .data = (u8 *)buffer,
+        .length = bytes_read,
+    };
 }
 
 
@@ -44,10 +49,10 @@ int main(int argc, char **argv)
         fprintf(stderr, "You must provide a single argument to this executable.\n");
         exit(EXIT_FAILURE);
     }
-    u8 *file_bytes = read_file(argv[1]);
+    FileData file_data = read_file(argv[1]);
 
-    disassemble_instructions(file_bytes);
+    disassemble_instructions(file_data.data, file_data.length);
 
-    free(file_bytes);
+    free(file_data.data);
     return 0;
 }
