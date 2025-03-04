@@ -60,11 +60,11 @@ static u32 parse_data_value(Memory *memory, SegmentedAccess *access, b32 exists,
 static Instruction try_decode(DisAsmContext *context, InstructionFormat *inst, Memory *memory, SegmentedAccess at)
 {
     Instruction dest = {};
-    u32 has[Bits_Count] = {};
+    b32 has[Bits_Count] = {};
     u32 bits[Bits_Count] = {};
     b32 valid = true;
 
-    u32 starting_address = get_absolute_address_of_struct(at, 0);
+    u64 starting_address = get_absolute_address_of_struct(at, 0);
 
     u8 bits_pending_count = 0;
     u8 bits_pending = 0;
@@ -113,7 +113,7 @@ static Instruction try_decode(DisAsmContext *context, InstructionFormat *inst, M
         b32 d = bits[Bits_D];
 
         b32 has_direct_address = ((mod == 0b00) && (rm == 0b110));
-        b32 has_displacement = ((bits[Bits_HasDisp]) || (mod == 0b10) || has_direct_address);
+        b32 has_displacement = ((bits[Bits_HasDisp]) || (mod == 0b10) || (mod == 0b01) || has_direct_address);
         b32 displacement_is_w = ((bits[Bits_DispAlwaysW]) || (mod == 0b10) || has_direct_address);
         b32 data_is_w = ((bits[Bits_WMakesDataW]) && !s && w);
 
